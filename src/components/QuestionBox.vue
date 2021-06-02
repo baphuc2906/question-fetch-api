@@ -9,14 +9,14 @@
       <hr class="my-4">
 
       <b-list-group>
-        <b-list-group-item v-for="(answer, index) in answers" :key="index" @click="selectAnswer(index)"
+        <b-list-group-item v-for="(answer, index) in shuffledAnswers" :key="index" @click="selectAnswer(index)"
           :class="answerClass(index)"
         > {{ answer}}</b-list-group-item>
        
       </b-list-group>
 
       <b-button
-        variant= "primary"
+        variant="primary"
         @click="submitAnswer"
         :disabled="selectedIndex === null || answered"
       >Submit</b-button>
@@ -49,11 +49,38 @@ export default {
     submitAnswer() {
       let isCorrect = false
 
-      if(this.selectedIndex == this.correctIndex ) {
-        isCorrect = true
+      if(this.selectedIndex != this.correctIndex ) {
+        this.answered = true;
+       
+        this.$swal.fire({
+                  title: 'Bạn trả lời sai rồi, bạn có muốn trả lời lại không?',
+                  icon: 'error',
+                  showCancelButton: true
+              }).then((result) => {
+                  if(result.isConfirmed) {
+                     this.$swal('Đùa thôi chớ chứ ai mà cho :D');
+                  } else {
+                    this.next()
+                    this.increment(isCorrect);
+                  }
+        })
+      } else {
+        isCorrect = true;
+        
+        this.$swal.fire({
+                  title: 'Bạn trả lời đúng rồi, bạn có muốn qua câu mới ngay không?',
+                  icon: 'success',
+                  showCancelButton: true
+              }).then((result) => {
+                  if(result.isConfirmed) {
+                    this.answered = true;
+                    this.next()
+                    this.increment(isCorrect);
+
+               }
+        })
       }
-      this.answered = true;
-      this.increment(isCorrect)
+      
     },
     shuffleAnswers() {
       let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer];

@@ -46,7 +46,6 @@ export default {
       if(isCorrect) {
         this.numCorrect ++
       }
-      console.log("ok")
       this.numTotal++
     }
   },
